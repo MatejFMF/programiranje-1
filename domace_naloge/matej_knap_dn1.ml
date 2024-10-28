@@ -141,7 +141,7 @@ let odvod polinom =
 
 (* Lep izpis *)
 
-(* let rec potence_izpis =
+let rec potence_izpis_pomozna =
     function
     | 0 -> "⁰"
     | 1 -> "¹"
@@ -153,15 +153,46 @@ let odvod polinom =
     | 7 -> "⁷"
     | 8 -> "⁸"
     | 9 -> "⁹"
-    | x -> "1" 
+    | x -> potence_izpis_pomozna (x / 10) ^ (potence_izpis_pomozna (x mod 10))
+
+let potence_izpis =
+    function
+    | 0 -> ""
+    | 1 -> ""
+    | x -> potence_izpis_pomozna x
     
-    
-let izpis polinom =
+let koeficienti stevilo zacetek=
+    match zacetek with
+    | true -> 
+        (match stevilo with
+            | 0 -> ""
+            | 1 -> "x"
+            | -1 -> "-x"
+            | n -> string_of_int n ^ "x"
+        )
+    | false -> 
+        (match stevilo with
+            | 0 -> ""
+            | 1 -> " + x"
+            | -1 -> " - x"
+            | n when n > 0 -> " + " ^ string_of_int n ^ "x"
+            | n -> " - " ^ string_of_int(-n) ^ "x"
+        )
+
+
+
+
+(* let izpis polinom =
     let rec izpis' polinom potenca acc_string =
         match polinom with
         | [] -> acc_string
-        | x :: xs -> 1
-    in *)
+        | x :: xs when potenca = 0 -> izpis' xs (potenca + 1) ( string_of_int(abs(x)) ^ (fun x)) ^ acc_string
+        | x :: [] -> koeficienti x true ^ potence_izpis potenca  ^ acc_string
+        | 0 :: xs -> izpis' xs (potenca + 1) (acc_string)
+        | x :: xs -> izpis' xs (potenca + 1) ( (koeficienti x false  ^ potence_izpis potenca) ^ acc_string)
+    in
+    izpis' polinom 0 "" *)
+
 
 (* SAMODEJNO ODVAJANJE *)
 
@@ -207,6 +238,6 @@ let crka i = Char.chr (i + Char.code 'A')
 
 (* Šifriranje *)
 
-let sifriraj sifra besedilo -> 
+let sifriraj sifra besedilo = 
     String.map besedilo 
     
