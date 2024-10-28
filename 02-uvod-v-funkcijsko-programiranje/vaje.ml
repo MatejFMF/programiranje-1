@@ -10,9 +10,9 @@ type vector = float list
 Definirajte enotske vektorje `i`, `j` in `k` v treh dimenzijah.
 [*----------------------------------------------------------------------------*)
 
-let i = [1.;0.;0.];;
-let j = [0.;1.;0.];;
-let k = [0.;0.;1.];;
+let i = [1.;0.;0.]
+let j = [0.;1.;0.]
+let k = [0.;0.;1.]
 
 
 (*----------------------------------------------------------------------------*]
@@ -37,20 +37,22 @@ Napišite funkcijo `skalarni_produkt : vector -> vector -> float`, ki izračuna
 skalarni produkt dveh vektorjev
 [*----------------------------------------------------------------------------*)
 
-let rec skalarni_produkt = ()
+let vsota_vektorja = List.fold_left ( +. ) 0.
+
+let skalarni_produkt vector1 vector2 = vsota_vektorja (List.map2 ( *. ) vector1 vector2)
 
 (*----------------------------------------------------------------------------*]
 Napišite funkcijo `norma : vector -> float`, ki vrne evklidsko normo vektorja.
 [*----------------------------------------------------------------------------*)
 
-let rec norma = ()
+let norma vector = sqrt (skalarni_produkt vector vector);;
 
 (*----------------------------------------------------------------------------*]
 Napišite funkcijo `projeciraj : vector -> vector -> vector`, ki izračuna 
 projekcijo prvega vektorja na drugega.
 [*----------------------------------------------------------------------------*)
 
-let rec projeciraj = ()
+let projeciraj vector1 vector2 = razteg ((skalarni_produkt vector1 vector2) /. norma vector1) (razteg (norma vector2) vector2)
 
 (*----------------------------------------------------------------------------*]
 Napišite funkcijo `ovij : string -> string -> string`, ki sprejme ime HTML 
