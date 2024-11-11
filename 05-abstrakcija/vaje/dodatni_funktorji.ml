@@ -21,9 +21,14 @@ module type Comparable = sig
  Napiši modul za primerjavo celih števil. Primerjaj nekaj celih števil.
 [*----------------------------------------------------------------------------*)
 
-module Cmp_Int = struct
+module Cmp_Int  = struct
   type t = int
-  let compare x y = failwith "to do"
+  let compare x y = 
+    match (x,y) with
+    | _ when x = y -> EQ
+    | _ when x > y -> GT
+    | _ -> LT
+
 end
 
 (*----------------------------------------------------------------------------*]
@@ -44,6 +49,17 @@ module Cmp_Int_prescribed = (Cmp_Int : Comparable with type t = int)
  Funkcija [Pervasives.compare s t] vrne -1 če je s < t, 0 če s = t in 1 za s > t
 [*----------------------------------------------------------------------------*)
 
+module Cmp_Str : Comparable = struct
+  type t = string
+  let compare s t =
+    match Pervasives.compare s t with
+    | -1 -> LT
+    | 0 -> EQ
+    | 1 -> GT
+    | _ -> raise(Failure("Nekaj je narobe"))
+
+end
+
 
 (*----------------------------------------------------------------------------*]
  Funktor je preslikava iz modula v modul. Sedaj definiraj funktor, ki sprejme
@@ -55,12 +71,12 @@ module Cmp_Int_prescribed = (Cmp_Int : Comparable with type t = int)
  modula ujema s tipom modula, ki ga podamo kot argument
 [*----------------------------------------------------------------------------*)
 
-(*
-module Cmp_inv (Cmp : Comparable) : Comparable with type t = Cmp.t  = struct
+
+(* module Cmp_inv (Cmp : Comparable) : Comparable with type t = Cmp.t  = struct
   type t = ...
   let compare x y = ...
-end
- *)
+end *)
+
 
 (*----------------------------------------------------------------------------*]
  Funktor uporabljamo podobno kot funkcije, le da v tem primeru potrebujemo
