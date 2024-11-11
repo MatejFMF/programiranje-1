@@ -27,8 +27,8 @@ parts:
   # - file: 01-racunalniska-arhitektura.md
   - file: 02-uvod-v-funkcijsko-programiranje.ipynb
   - file: 03-rekurzija.ipynb
-  # - file: 04-algebrajski-tipi.ipynb
-  # - file: 05-abstrakcija.md
+  - file: 04-podatkovni-tipi.ipynb
+  - file: 05-abstrakcija.ipynb
 # - caption: Dokazovalniki
   # chapters:
   # - file: 06-curry-howardov-izomorfizem.md
