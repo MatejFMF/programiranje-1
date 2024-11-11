@@ -21,6 +21,10 @@
  - : euro = Euro 0.4305
 [*----------------------------------------------------------------------------*)
 
+type dollar = Dollar of float
+type euro = Euro of float
+
+let dollar_to_euro (Dollar amount) = Euro ( 0.8 *. amount)
 
 
 (*----------------------------------------------------------------------------*]
@@ -35,7 +39,16 @@
  - : currency = Pound 0.007
 [*----------------------------------------------------------------------------*)
 
+type currency =
+       | Yen of float
+       | Pound of float
+       | Svedska_krona of float
 
+let to_pound = 
+       function
+       | Yen amount -> Pound (amount *. 0.005)
+       | Pound amount -> Pound amount
+       | Svedska_krona amount -> Pound (amount *. 1.2)
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Želimo uporabljati sezname, ki hranijo tako cela števila kot tudi logične
@@ -56,6 +69,12 @@
 
  Nato napišite testni primer, ki bi predstavljal "[5; true; false; 7]".
 [*----------------------------------------------------------------------------*)
+
+type intbool =
+       | Bool of bool
+       | Int of int
+
+type intbool_list = intbool list
 
 
 
@@ -97,7 +116,10 @@ let rec intbool_separate = ()
  raziskovanje oz. historian, teacher in researcher. Definirajte tip
  [specialisation], ki loči med temi zaposlitvami.
 [*----------------------------------------------------------------------------*)
-
+type magic =
+| Fire
+| Frost
+| Arcane
 
 
 (*----------------------------------------------------------------------------*]
