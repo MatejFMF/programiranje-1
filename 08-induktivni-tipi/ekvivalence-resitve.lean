@@ -29,17 +29,14 @@ theorem trd1  {A : Type} {x : A} : reverse [x] = [x] :=
     simp [reverse]
     simp [concat]
 
-
 theorem trd2 {A : Type} {xs ys : List A} : length (concat xs ys) = length xs + length ys :=
   by
     induction xs with
     | nil =>
-      simp [concat,length]
+      simp [concat, length]
     | cons x xs' ih =>
-      simp [concat]
-      simp [length]
-      rw [ih]
-      rw [Nat.add_assoc]
+      simp [concat, length]
+      rw [ih, Nat.add_assoc]
 
 -- Tega poznamo že iz predavanj
 theorem trd3 {A : Type} {xs : List A} : concat xs [] = xs :=
@@ -60,28 +57,26 @@ theorem trd4 {A : Type} {xs ys zs : List A} : concat (concat xs ys) zs = concat 
       simp [concat]
       rw [ih]
 
-
 theorem trd5 {A : Type} {xs ys : List A} : reverse (concat xs ys) = concat (reverse ys) (reverse xs) :=
   by
     induction xs with
     | nil =>
-      simp [reverse,concat,trd3]
+      simp [concat, reverse]
+      rw [trd3]
     | cons x xs' ih =>
-      simp [concat,reverse]
-      rw [ih]
-      rw [trd4]
+      simp [concat, reverse]
+      rw [ih, trd4]
 
 theorem trd6 {A : Type} {xs : List A} : length (reverse xs) = length xs :=
   by
     induction xs with
     | nil =>
-     simp [reverse]
+      simp [reverse, length]
     | cons x xs' ih =>
-      simp[reverse,length]
-      rw [trd2]
+      simp [reverse, length]
+      rw [trd2, ih]
       simp [length]
-      rw [ih]
-      simp [Nat.add_comm]
+      rw [Nat.add_comm]
 
 theorem trd7 {A : Type} {xs : List A} : reverse (reverse xs) = xs :=
   by
@@ -90,15 +85,15 @@ theorem trd7 {A : Type} {xs : List A} : reverse (reverse xs) = xs :=
       simp [reverse]
     | cons x xs' ih =>
       simp [reverse]
-      rw [trd5]
-      simp [reverse,concat]
-      rw [ih]
+      rw [trd5, ih]
+      simp [concat]
+
 
 def map {A B : Type} : (A → B) → List A → List B :=
-  fun f list =>
-    match list with
+  fun f xs =>
+    match xs with
     | [] => []
-    | x :: xs => f x :: map f xs
+    | x :: xs' => f x :: map f xs'
 
 theorem map_assoc {A B C : Type} {f : A → B} {g : B → C} {xs : List A} : map g (map f xs) = map (g ∘ f) xs :=
   by
@@ -118,14 +113,13 @@ theorem map_id {A : Type} {xs : List A} : map id xs = xs :=
       simp [map]
       rw [ih]
 
-
 theorem map_concat {A B : Type} {f : A → B} {xs ys : List A} : map f (concat xs ys) = concat (map f xs) (map f ys) :=
   by
     induction xs with
     | nil =>
-      simp [concat]
+      simp [concat, map]
     | cons x xs' ih =>
-      simp [concat,map]
+      simp [concat, map]
       rw [ih]
 
 
@@ -133,12 +127,11 @@ theorem map_reverse {A B : Type} {f : A → B} {xs : List A} : map f (reverse xs
   by
     induction xs with
     | nil =>
-      simp [reverse,map]
+      simp [reverse, map]
     | cons x xs' ih =>
-      simp [reverse]
-      rw [map_concat]
-      simp [map]
-      rw [ih]
+      simp [reverse, map]
+      rw [map_concat, ih]
+      simp [reverse, map]
 
 inductive tree (A : Type) : Type where
   | empty : tree A
@@ -146,14 +139,11 @@ inductive tree (A : Type) : Type where
 
 #check tree.rec
 
-#check id
-
 def tree_map {A B : Type} : (A → B) → tree A → tree B :=
   fun f t =>
-    match t with
+   match t with
     | tree.empty => tree.empty
-    | tree.node x y z => tree.node (f x) (tree_map f y) (tree_map f z)
-
+    | tree.node x l r => tree.node (f x) (tree_map f l) (tree_map f r)
 
 theorem tree_map_empty {A B : Type} {f : A → B} : tree_map f tree.empty = tree.empty :=
   by
@@ -164,11 +154,12 @@ theorem tree_map_comp {A B C : Type} {f : A → B} {g : B → C} {t : tree A} : 
     induction t with
     | empty =>
       simp [tree_map]
-    | node x l r lih rih =>
+    | node x l r ihl ihr =>
       simp [tree_map]
-      simp [lih,rih]
-
-
+      rw [ihl, ihr]
+      constructor
+      rfl
+      rfl
 
 def depth {A : Type} : tree A → Nat :=
   fun t =>
@@ -176,10 +167,8 @@ def depth {A : Type} : tree A → Nat :=
     | tree.empty => 0
     | tree.node _ l r => 1 + Nat.max (depth l) (depth r)
 
--- S tem se ne bomo ukvarjali
 theorem max_comm {a b : Nat} : Nat.max a b = Nat.max b a :=
-  by
-    simp [Nat.max_comm]
+  sorry
 
 def mirror {A : Type} : tree A → tree A :=
   fun t =>
@@ -191,20 +180,21 @@ theorem mirror_depth {A : Type} {t : tree A} : depth (mirror t) = depth t :=
   by
     induction t with
     | empty =>
-      simp [mirror]
-    | node x l r lih rih =>
-      simp [mirror,depth]
-      simp [rih,lih]
-      simp [max_comm]
+      simp [mirror, depth]
+    | node x l r ihl ihr =>
+      simp [mirror, depth]
+      rw [ihl, ihr]
+      rw [max_comm]
 
 theorem mirror_mirror {A : Type} {t : tree A} : mirror (mirror t) = t :=
   by
     induction t with
     | empty =>
       simp [mirror]
-    | node x l r lih rih =>
+    | node x l r ihl ihr =>
       simp [mirror]
-      simp [lih,rih]
+      rw [ihl, ihr]
+      simp [mirror]
 
 def collect {A : Type} : tree A → List A :=
   fun t =>
@@ -217,58 +207,111 @@ theorem trd8 {A : Type} {x : A} {xs ys : List A} : concat xs (x::ys) = concat (c
     induction xs with
     | nil =>
       simp [concat]
-    | cons x' xs' ih =>
+    | cons x xs' ih =>
       simp [concat]
       rw [ih]
+
 
 theorem collect_mirror {A : Type} {t : tree A} : collect (mirror t) = reverse (collect t) :=
   by
     induction t with
     | empty =>
-      simp [mirror,collect,reverse]
-    | node x l r lih rih =>
-     simp [mirror]
-     simp [collect]
-     simp [lih,rih]
-     simp [trd5]
-     simp [reverse,concat]
-     rw [trd8]
-
-
+      simp [mirror, collect, reverse]
+    | node x l r ihl ihr =>
+      simp [mirror, collect, reverse]
+      rw [ihl, ihr]
+      simp [concat]
+      rw [trd5]
+      rw [trd8]
+      simp [reverse]
 
 
 def size {A : Type} : tree A → Nat :=
   fun t =>
     match t with
     | tree.empty => 0
-    | tree.node _ l r => 1 + (size l) + (size r)
+    | tree.node _ l r => 1 + size l + size r
 
 theorem size_mirror {A : Type} {t : tree A} : size (mirror t) = size t :=
-<<<<<<< HEAD
   by
     induction t with
     | empty =>
-      simp [mirror]
-    | node x l r lih rih =>
-      simp [mirror,size,lih,rih]
-      simp [Nat.add_assoc]
-      simp [Nat.add_comm]
-=======
-  sorry
+      simp [mirror, size]
+    | node x l r ihl ihr =>
+      simp [mirror, size]
+      rw [ihl, ihr]
+      rw [Nat.add_assoc, Nat.add_comm (size r) (size l), Nat.add_assoc]
+
 
 
 --- Indukcija na pomožnih funkcijah z akumulatorjem
 
-theorem concat2 : concat xs (x :: ys) = concat (concat (xs) [x]) ys :=
+theorem concat2 (x : A) (xs ys : List A) : concat xs (x :: ys) = concat (concat (xs) [x]) ys :=
   by
-    sorry
+    induction xs with
+    | nil => simp [concat]
+    | cons x' xs' ih =>
+      simp [concat]
+      assumption
 
 -- Definirajte repno rekurzivno funkcijo, ki obrne seznam
+-- def reverse' {A : Type} (xs : List A) : List A :=
+--   let rec aux : List A → List A → List A
+--     | [], acc => acc
+--     | x' :: xs', acc => aux xs' (x' :: acc)
+--   aux xs []
+
 def reverse' {A : Type} : List A → List A :=
-  sorry
+  fun xs =>
+  let rec aux : List A → List A → List A :=
+    fun xs => fun acc =>
+    match xs, acc with
+      | [], acc => acc
+      | x' :: xs', acc => aux xs' (x' :: acc)
+  aux xs []
+
+def reverse'' {A : Type} : List A → List A :=
+  fun xs =>
+    match xs with
+    | [] => []
+    | x :: xs' => (reverse'' xs') ++ [x]
 
 -- Dokažite, da je vaša funkcija pravilna
-theorem reverse_eq_reverse' {A : Type} : ∀ {xs : List A}, reverse xs = reverse' xs :=
+theorem reverse''_eq_reverse'.aux {A : Type} :
+∀ {xs acc : List A},
+(reverse'' xs) ++ acc = reverse'.aux xs acc :=
   by
-    sorry
->>>>>>> c914e27fb585a66bde37488fb77b29fbced94c4c
+    intro xs
+    induction xs with
+    | nil =>
+      simp [reverse'', reverse'.aux]
+    | cons x xs' ih =>
+      intro acc
+      simp [reverse'', reverse'.aux]
+      rw [ih]
+
+theorem reverse''_eq_reverse' {A : Type} :
+∀ {xs : List A}, reverse'' xs = reverse' xs :=
+  by
+    intro xs
+    induction xs with
+    | nil =>
+      simp [reverse', reverse'', reverse'.aux]
+    | cons x xs' _ =>
+      simp [reverse', reverse'', reverse'.aux]
+      exact reverse''_eq_reverse'.aux
+
+
+theorem reverse_eq_reverse'.aux {A : Type} :
+∀ {xs acc : List A},
+concat (reverse xs) acc = reverse'.aux xs acc :=
+  by
+    intro xs
+    induction xs with
+    | nil =>
+      simp [reverse, reverse'.aux, concat]
+    | cons x xs' ih =>
+      intro acc
+      simp [reverse, reverse'.aux, concat]
+      rw [← concat2]
+      rw [ih]
