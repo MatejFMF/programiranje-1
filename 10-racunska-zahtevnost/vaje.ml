@@ -19,6 +19,7 @@ Natančno definirajte pogoje, da funkcija `f` uredi seznam.
 [*----------------------------------------------------------------------------*)
 
 
+
 (*----------------------------------------------------------------------------*]
  Prazen seznam je že urejen. Funkcija [insert_sort] uredi seznam tako da
  zaporedoma vstavlja vse elemente seznama v prazen seznam.
@@ -72,6 +73,12 @@ Natančno definirajte pogoje, da funkcija `f` uredi seznam.
  - : int array = [|0; 4; 2; 3; 1|]
 [*----------------------------------------------------------------------------*)
 
+let swap a i j =
+  let a_i = a.(i) in 
+  let a_j = a.(j) in 
+  Array.set a i a_j ;
+  Array.set a j a_i
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [index_min a lower upper] poišče indeks najmanjšega elementa tabele
@@ -80,11 +87,26 @@ Natančno definirajte pogoje, da funkcija `f` uredi seznam.
  index_min [|0; 2; 9; 3; 6|] 2 4 = 4
 [*----------------------------------------------------------------------------*)
 
+let index_min a lower upper = 
+  let rec index_min' a lower upper acc index_acc =
+    if lower > upper then index_acc else
+    match a.(lower) < acc with
+    | true -> index_min' a (lower+1) upper a.(lower) lower
+    | false -> index_min' a (lower+1) upper acc index_acc
+  in 
+  index_min' a lower upper a.(lower) lower
 
 (*----------------------------------------------------------------------------*]
  Funkcija [selection_sort_array] implementira urejanje z izbiranjem na mestu. 
 [*----------------------------------------------------------------------------*)
 
+let selection_sort_array a =
+  let rec selection_sort_array' a lower upper =
+    swap a lower (index_min a lower upper); 
+    if lower >= upper then () else
+    selection_sort_array' a (lower+1) upper
+  in
+  selection_sort_array' a 0 (Array.length a - 1)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [min_and_rest list] vrne par [Some (z, list')] tako da je [z]
