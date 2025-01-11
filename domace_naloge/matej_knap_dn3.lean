@@ -88,7 +88,9 @@ def rep : sorry :=
 theorem forall_implies : {A : Type} → {P Q : A → Prop} →
   (∀ x, (P x → Q x)) → (∀ x, P x) → (∀ x, Q x) := by
   intros  a p q p1 p2
-  simp
+  intro x
+  apply [p1]
+
 
 theorem forall_implies' : {A : Type} → {P : Prop} → {Q : A → Prop} →
   (∀ x, (P → Q x)) ↔ (P → ∀ x, Q x) := by
